@@ -13,6 +13,7 @@ describe('NFT', () => {
   const SYMBOL = 'FPNK'
   const COST = ether(10)
   const MAX_SUPPLY = 25
+  // ??? would this hash be an env var ???
   const BASE_URI = 'ipfs://QmQ2jnDYecFhrf3asEWjyjZRX1pZSsNWG3qHzmNDvXa9qg/'
   
   let nft,
@@ -67,7 +68,6 @@ describe('NFT', () => {
     let transaction, result
 
     describe('Success', () => {
-      // 2min from now in EPOCH time
       const ALLOW_MINTING_ON = Date.now().toString().slice(0, 10)
 
       beforeEach(async () => {
@@ -85,6 +85,11 @@ describe('NFT', () => {
 
       it('returns the total number of tokens minter owns', async () => {
         expect (await nft.balanceOf(minter.address)).to.eq(1)
+      })
+
+      it('returns IPFS URI', async () => {
+        // console.log(await nft.tokenURI(1))
+        expect(await nft.tokenURI(1)).to.eq(`${BASE_URI}1.json`)
       })
 
       it('updates the total supply', async () => {
@@ -136,6 +141,17 @@ describe('NFT', () => {
         nft = await NFT.deploy(NAME, SYMBOL, COST, MAX_SUPPLY, ALLOW_MINTING_ON, BASE_URI)
 
         await expect(nft.connect(minter).mint(26, {value: COST})).to.be.reverted
+      })
+
+      it('does not return URI for invalid tokens', async () => {
+        // Now
+        const ALLOW_MINTING_ON = Date.now().toString().slice(0, 10)
+        const NFT = await ethers.getContractFactory('NFT')
+        nft = await NFT.deploy(NAME, SYMBOL, COST, MAX_SUPPLY, ALLOW_MINTING_ON, BASE_URI)
+
+        nft.connect(minter).mint(1, {value: COST})
+
+        await expect(nft.tokenURI('99')).to.be.reverted
       })
 
     })
