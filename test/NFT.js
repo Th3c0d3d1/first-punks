@@ -68,14 +68,14 @@ describe('NFT', () => {
 
     describe('Success', () => {
       // 2min from now in EPOCH time
-      const ALLOW_MINTING_ON = (Date.now() + 120000).toString().slice(0, 10)
+      const ALLOW_MINTING_ON = Date.now().toString().slice(0, 10)
 
       beforeEach(async () => {
         const NFT = await ethers.getContractFactory('NFT')
         nft = await NFT.deploy(NAME, SYMBOL, COST, MAX_SUPPLY, ALLOW_MINTING_ON, BASE_URI)
 
         transaction = await nft.connect(minter).mint(1, {value: COST})
-        result = await transaction.wait
+        result = await transaction.wait()
       })
 
       it('updates the total supply', async () => {
@@ -88,6 +88,23 @@ describe('NFT', () => {
     })
 
     describe('Failure', async () => {
+      it('rejects insufficient payment', async () => {
+        // Now
+        const ALLOW_MINTING_ON = Date.now().toString().slice(0, 10)
+        const NFT = await ethers.getContractFactory('NFT')
+        nft = await NFT.deploy(NAME, SYMBOL, COST, MAX_SUPPLY, ALLOW_MINTING_ON, BASE_URI)
+
+        await expect(nft.connect(minter).mint(1, {value: ether(1)})).to.be.reverted
+      })
+
+      it('rejects minting before allowed time', async () => {
+        // Setting mint date into future
+        const ALLOW_MINTING_ON = new Date('May 26, 2030 18:00:00').getTime().toString().slice(0, 10)
+        const NFT = await ethers.getContractFactory('NFT')
+        nft = await NFT.deploy(NAME, SYMBOL, COST, MAX_SUPPLY, ALLOW_MINTING_ON, BASE_URI)
+
+        await expect(nft.connect(minter).mint(1, {value: COST})).to.be.reverted
+      })
 
     })
   })
