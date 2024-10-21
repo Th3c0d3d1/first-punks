@@ -78,8 +78,13 @@ describe('NFT', () => {
         result = await transaction.wait()
       })
 
+      // ownerOf & balanceOf functions inheritted from ERC721.sol contract
       it('returns the address of the minter', async () => {
         expect (await nft.ownerOf(1)).to.eq(minter.address)
+      })
+
+      it('returns the total number of tokens minter owns', async () => {
+        expect (await nft.balanceOf(minter.address)).to.eq(1)
       })
 
       it('updates the total supply', async () => {
