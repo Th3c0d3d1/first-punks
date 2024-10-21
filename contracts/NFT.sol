@@ -8,6 +8,7 @@ contract NFT is ERC721Enumerable {
     // Set global variables
     uint256 public cost;
     uint256 public maxSupply;
+    uint256 public allowMintingOn;
 
 
     // Inheritted ERC721 constructor params from ERC721Enumerable called as constructor arg
@@ -17,10 +18,12 @@ contract NFT is ERC721Enumerable {
         string memory _name,
         string memory _symbol,
         uint256 _cost,
-        uint256 _maxSupply
+        uint256 _maxSupply,
+        uint256 _allowMintingOn
     // ERC721 doesnt need the cost arg
     ) ERC721(_name, _symbol) {
         cost = _cost;
         maxSupply = _maxSupply;
+        allowMintingOn = _allowMintingOn;
     }
 }
