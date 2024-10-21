@@ -12,6 +12,7 @@ contract NFT is ERC721Enumerable, Ownable {
     uint256 public allowMintingOn;
     string public baseURI;
 
+    event Mint(uint256 amount, address minter);
 
     // Inheritted ERC721 constructor params from ERC721Enumerable called as constructor arg
     // Passes constructor param variables from NFT contract into constructor params from ERC721 contract
@@ -38,19 +39,27 @@ contract NFT is ERC721Enumerable, Ownable {
         // Allow minting after specified time
         // block.timestamp is now
         require(block.timestamp >= allowMintingOn);
+        
+        // Must mint at least 1 token
+        require(_mintAmount > 0);
 
         // Require adequate minter balance
         // cost * mintAmount is cost of x qty to be minted
         require(msg.value >= cost * _mintAmount);
 
         // Create a token(nft)
-        // ERC721Enummerable will tell you collection qty(not free in ERC721.sol)
+        // ??? ERC721Enummerable will tell you collection qty(not free in ERC721.sol) ???
         uint256 supply = totalSupply();
+
+        // Limit minting to token qty
+        require(supply + _mintAmount <= maxSupply);
 
         // looping token id for uniqueness
         for(uint256 i = 1; i <= _mintAmount; i++){
             // token id has to iterate
             _safeMint(msg.sender, supply + i);
         }
+
+        emit Mint(_mintAmount, msg.sender);
     }
 }
