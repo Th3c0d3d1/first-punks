@@ -16,6 +16,7 @@ contract NFT is ERC721Enumerable, Ownable {
     uint256 public allowMintingOn;
 
     event Mint(uint256 amount, address minter);
+    event Withdraw(uint256 amount, address owner);
 
     // Inheritted ERC721 constructor params from ERC721Enumerable called as constructor arg
     // Passes constructor param variables from NFT contract into constructor params from ERC721 contract
@@ -94,5 +95,14 @@ contract NFT is ERC721Enumerable, Ownable {
             tokenIds[i] = tokenOfOwnerByIndex(_owner, i);
         }
         return tokenIds;
+    }
+
+    function withdraw() public onlyOwner {
+        uint256 balance = address(this).balance;
+
+        (bool success, ) = payable(msg.sender).call{value: balance}("");
+        require(success);
+
+        emit Withdraw(balance, msg.sender);
     }
 }
