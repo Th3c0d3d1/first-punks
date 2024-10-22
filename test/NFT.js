@@ -207,6 +207,10 @@ describe('NFT', () => {
       it('sends funds to the owner', async () => {
         expect(await ethers.provider.getBalance(deployer.address)).to.be.greaterThan(balanceBefore)
       })
+      
+      it('changes the mint cost', async ()=> {
+
+      })
 
       it('emits a withdraw event', async () => {
         await expect(transaction).to.emit(nft, 'Withdraw')
