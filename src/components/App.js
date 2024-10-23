@@ -5,6 +5,7 @@ import { ethers } from 'ethers'
 
 // Components
 import Navigation from './Navigation';
+import Data from './Data';
 import Loading from './Loading';
 
 // ABIs: Import your contract ABIs here
@@ -60,11 +61,6 @@ function App() {
     // Fetch account balance
     setBalance(await nft.balanceOf(account))
 
-    // Fetch account balance
-    let balance = await provider.getBalance(account)
-    balance = ethers.utils.formatUnits(balance, 18)
-    setBalance(balance)
-
     setIsLoading(false)
   }
 
@@ -92,6 +88,13 @@ function App() {
               <div className='my-4 text-center'>
                 <Countdown date={parseInt(revealTime)} className='h2' />
               </div>
+
+              <Data
+                maxSupply={maxSupply}
+                totalSupply={totalSupply}
+                cost={cost}
+                balance={balance}
+              />
             </Col>
           </Row>
         </>
