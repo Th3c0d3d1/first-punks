@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
-import { Container } from 'react-bootstrap'
+import { Container, Row, Col } from 'react-bootstrap'
+import Countdown from 'react-countdown';
 import { ethers } from 'ethers'
 
 // Components
@@ -11,6 +12,9 @@ import NFT_ABI from '../abis/Nft.json';
 
 // Config: Import your network config here
 import config from '../config.json';
+
+// Import Preview Img
+import preview from '../preview.png';
 
 function App() {
   const [provider, setProvider] = useState(null)
@@ -48,13 +52,13 @@ function App() {
     setRevealTime(allowMintingOn.toString() + '000')
 
     // Fetch max supply
-    await nft.maxSupply()
+    setMaxSupply(await nft.maxSupply())
     // Fetch total supply
-    await nft.totalSupply()
+    setTotalSupply(await nft.totalSupply())
     // Fetch cost
-    await nft.cost()
+    setCost(await nft.cost())
     // Fetch account balance
-    await nft.balanceOf(account)
+    setBalance(await nft.balanceOf(account))
 
     // Fetch account balance
     let balance = await provider.getBalance(account)
@@ -74,14 +78,22 @@ function App() {
     <Container>
       <Navigation account={account} />
 
-      <h1 className='my-4 text-center'>React Hardhat Template</h1>
+      <h1 className='my-4 text-center'>First Punks</h1>
 
       {isLoading ? (
         <Loading />
       ) : (
         <>
-          <p className='text-center'><strong>Your ETH Balance:</strong> {balance} ETH</p>
-          <p className='text-center'>Edit App.js to add your code here.</p>
+          <Row>
+            <Col>
+              <img src={preview} alt='' />
+            </Col>
+            <Col>
+              <div className='my-4 text-center'>
+                <Countdown date={parseInt(revealTime)} className='h2' />
+              </div>
+            </Col>
+          </Row>
         </>
       )}
     </Container>
