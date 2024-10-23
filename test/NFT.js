@@ -13,7 +13,7 @@ describe('NFT', () => {
   const SYMBOL = 'FPNK'
   const COST = ether(10)
   const MAX_SUPPLY = 25
-  // ??? would this hash be an env var ???
+  // Hard coded URI for seamless testing between collaborators
   const BASE_URI = 'ipfs://QmQ2jnDYecFhrf3asEWjyjZRX1pZSsNWG3qHzmNDvXa9qg/'
   
   let nft,
