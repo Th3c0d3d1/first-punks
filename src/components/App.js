@@ -35,7 +35,7 @@ function App() {
 
     // Initiate the contract
     const nft = new ethers.Contract(config[31337].nft.address, NFT_ABI, provider)
-    setNFT(nft)
+    setNft(nft)
 
     // Fetch accounts
     const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' })
