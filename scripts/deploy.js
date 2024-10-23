@@ -7,21 +7,24 @@
 const hre = require("hardhat");
 
 async function main() {
+  // Declare Vars
   const NAME = 'First Punks'
-  const SYMBOL = 'DAPP'
+  const SYMBOL = 'FPKS'
   const COST = ethers.utils.parseUnits('10', 'ether')
   const MAX_SUPPLY = '25'
   const NFT_MINT_DATE = (Date.now() + 60000).toString().slice(0, 10)
   const IPFS_METADATA_URI = 'ipfs://QmQ2jnDYecFhrf3asEWjyjZRX1pZSsNWG3qHzmNDvXa9qg/'
 
-  // Deploy Token
+  // Deploy NFT
   const NFT = await hre.ethers.getContractFactory('NFT')
   let nft = await NFT.deploy(NAME, SYMBOL, COST, MAX_SUPPLY, NFT_MINT_DATE, IPFS_METADATA_URI)
 
+  // Log NFT address
   await nft.deployed()
   console.log(`NFT deployed to: ${nft.address}\n`)
 }
 
+// Handle errors
 // We recommend this pattern to be able to use async/await everywhere
 // and properly handle errors.
 main().catch((error) => {
