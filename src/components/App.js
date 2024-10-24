@@ -83,7 +83,21 @@ function App() {
         <>
           <Row>
             <Col>
-              <img src={preview} alt='' />
+              {balance > 0 ? (
+                <div className='text-center'>
+                  <img
+                    // --->>> Pull nfts from wallet <<<---
+                    // ??? where did he get the hash from ???
+                    // not QmQ2jnDYecFhrf3asEWjyjZRX1pZSsNWG3qHzmNDvXa9qg
+                    src = {`https://gateway.pinata.cloud/ipfs/QmQPEMsfd1tJnqYPbnTQCjoa8vczfsV1FmqZWgRdNQ7z3g/${balance.toString()}.png`}
+                    alt = 'Open First Punks'
+                    width = '400px'
+                    height = '400px'
+                  />
+                </div>
+              ) : (
+                <img src={preview} alt='' />
+              )}
             </Col>
             <Col>
               <div className='my-4 text-center'>

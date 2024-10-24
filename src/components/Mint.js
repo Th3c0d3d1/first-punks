@@ -1,4 +1,5 @@
-import { Form, Button } from "react-bootstrap";
+import { useState } from "react";
+import { Form, Button, Spinner } from "react-bootstrap";
 import { ethers } from "ethers";
 
 // provider - signs tx
@@ -6,11 +7,13 @@ import { ethers } from "ethers";
 // cost - verify payment amount
 // setIsLoading - refresh page
 const Mint = ({provider, nft, cost, setIsLoading}) => {
+    const [isWaiting, setIsWaiting] = useState(false)
 
     const mintHandler = async(e) => {
         e.preventDefault()
         // Verify button onSubmit functionality in console 
         // console.log('minting...')
+        setIsWaiting(true)
 
         try{
             // Get signer
@@ -22,16 +25,20 @@ const Mint = ({provider, nft, cost, setIsLoading}) => {
         } catch {
             window.alert('User rejected or transaction reverted')
         }
-        
+        setIsLoading(true)
     }
 
     return(
         <Form onSubmit={mintHandler} style={{maxWidth: '450px', margin: '50px auto'}}>
-            <Form.Group>
-                <Button variant="primary" type="submit" style={{width: '100%'}}>
-                    Mint
-                </Button>
-            </Form.Group>
+            {isWaiting ? (
+                <Spinner animation="border" style={{display: 'block', margin: '0 auto'}} />
+            ) : (
+                <Form.Group>
+                    <Button variant="primary" type="submit" style={{width: '100%'}}>
+                        Mint
+                    </Button>
+                </Form.Group>
+            )}
         </Form>
     )
 }
