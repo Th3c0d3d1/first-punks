@@ -1,5 +1,5 @@
 import { Form, Button } from "react-bootstrap";
-import { ethers } from "hardhat";
+import { ethers } from "ethers";
 
 // provider - signs tx
 // nft - call mint function
