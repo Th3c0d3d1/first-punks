@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Container, Row, Col } from 'react-bootstrap'
 import Countdown from 'react-countdown';
+import { ethers } from 'ethers'
 
 // Components
 import Navigation from './Navigation';

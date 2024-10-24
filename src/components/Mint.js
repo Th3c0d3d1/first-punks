@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { Form, Button, Spinner } from "react-bootstrap";
-import { ethers } from "ethers";
 
 // provider - signs tx
 // nft - call mint function
