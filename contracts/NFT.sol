@@ -4,8 +4,9 @@ pragma solidity ^0.8.0;
 // from openzepplin --> import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
 import "./ERC721Enumerable.sol";
 import "./Ownable.sol";
+import "./Whitelist.sol";
 
-contract NFT is ERC721Enumerable, Ownable {
+contract NFT is ERC721Enumerable, Ownable, Whitelist{
     using Strings for uint256;
 
     // ??? Set global/local variables ???
@@ -40,6 +41,28 @@ contract NFT is ERC721Enumerable, Ownable {
         baseURI = _baseURI;
     }
 
+    // function to buy tokens by direct contract interaction
+    // no user/website interaction
+    // required to receive ETH
+    // sets the cost required to buy nfts
+    receive() external payable{
+        // Verify user is whitelisted
+        require(isWhitelisted(msg.sender), 'user must be whitelisted');
+        
+        // Ensure minting is not paused
+        require(!paused, "Minting is paused");
+
+        // Calculate the number of NFTs to mint
+        uint256 amount = msg.value / cost;
+        require(amount > 0, "Insufficient funds to mint NFTs");
+
+        // Mint the tokens
+        mint(amount);
+
+        // Emit an event for the purchase
+        emit Mint(amount, msg.sender);
+    }
+
     // Mapping to track minted tokens
     mapping(address => uint256) public mintedTokens;
 
@@ -63,8 +86,8 @@ contract NFT is ERC721Enumerable, Ownable {
         // ??? ERC721Enummerable will tell you collection qty(not free in ERC721.sol) ???
         uint256 supply = totalSupply();
 
-        // Limit minting to token qty
-        require(supply + _mintAmount <= maxSupply);
+        // // ??? Limit minting to token qty
+        // require(supply + _mintAmount <= maxSupply);
 
         // Enforce max minting limit per account
         require(mintedTokens[msg.sender] + _mintAmount <= 3, "Max minting limit per account is 3");

@@ -8,18 +8,18 @@ import "hardhat/console.sol";
 contract Whitelist {
     // "public" visibility accesses value from outside the contract
     // state variables stored on the blockchain
-    address public owner;
+    address private whitelistOwner;
 
     // mapping the address for boolean
     mapping(address => bool) whitelist;
 
     constructor() {
-        owner = msg.sender;
+        whitelistOwner = msg.sender;
     }
 
     // modifier requiring the user to be whitelisted to mint
-    modifier onlyOwner() {
-    require(msg.sender == owner, 'caller must be owner');
+    modifier onlyWhitelistOwner() {
+    require(msg.sender == whitelistOwner, 'caller must be owner');
     _;
     }
 
@@ -31,14 +31,14 @@ contract Whitelist {
     );
 
     // Add/remove accounts to whitelist
-    function add(address _address) public onlyOwner returns (bool success)
+    function add(address _address) public onlyWhitelistOwner returns (bool success)
     {
         whitelist[_address] = true;
         emit addedToWhitelist(_address);
         return true;
     }
 
-    function remove(address _address) public onlyOwner {
+    function remove(address _address) public onlyWhitelistOwner {
         whitelist[_address] = false;
         emit removeFromWhitelist(_address);
     }
