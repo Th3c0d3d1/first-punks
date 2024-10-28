@@ -59,41 +59,42 @@ describe('NFT', () => {
       const NFT = await ethers.getContractFactory('NFT')
       nft = await NFT.deploy(NAME, SYMBOL, COST, MAX_SUPPLY, ALLOW_MINTING_ON, BASE_URI)
     })
-
-    it('has correct name', async () => {
+    
+    describe('Success', () => {
+      it('has correct name', async () => {
       expect(await nft.name()).to.equal(NAME)
-    })
+      })
 
-    it('has correct symbol', async () => {
-      expect(await nft.symbol()).to.equal(SYMBOL)
-    })
+      it('has correct symbol', async () => {
+        expect(await nft.symbol()).to.equal(SYMBOL)
+      })
 
-    it('returns mint cost', async () => {
-      expect(await nft.cost()).to.equal(COST)
-    })
+      it('returns mint cost', async () => {
+        expect(await nft.cost()).to.equal(COST)
+      })
 
-    it('returns max total supply', async () => {
-      expect(await nft.maxSupply()).to.equal(MAX_SUPPLY)
-    })
+      it('returns max total supply', async () => {
+        expect(await nft.maxSupply()).to.equal(MAX_SUPPLY)
+      })
 
-    it('returns the allowed minting time', async () => {
-      expect(await nft.allowMintingOn()).to.equal(ALLOW_MINTING_ON)
-    })
+      it('returns the allowed minting time', async () => {
+        expect(await nft.allowMintingOn()).to.equal(ALLOW_MINTING_ON)
+      })
 
-    it('returns the base URI', async () => {
-      expect(await nft.baseURI()).to.equal(BASE_URI)
-    })
+      it('returns the base URI', async () => {
+        expect(await nft.baseURI()).to.equal(BASE_URI)
+      })
 
-    it('returns the owner', async () => {
-      expect(await nft.owner()).to.equal(deployer.address)
-    })
+      it('returns the owner', async () => {
+        expect(await nft.owner()).to.equal(deployer.address)
+      })
 
-    it('verifies owners whitelist status', async () => {
-      // Verify owner is on the whitelist
-      expect(await whitelist.isWhitelisted(deployer.address)).to.be.true
-    })
+      it('verifies owners whitelist status', async () => {
+        // Verify owner is on the whitelist
+        expect(await whitelist.isWhitelisted(deployer.address)).to.be.true
+      })
 
-    it('checks owners right to add/del user from whitelist ', async () => {
+      it('checks owners right to add/del user from whitelist ', async () => {
         // Verify owner can add user to whitelist
         await whitelist.add(nonWhitelistedMinter.address)
         expect(await whitelist.isWhitelisted(nonWhitelistedMinter.address)).to.be.true
@@ -101,6 +102,17 @@ describe('NFT', () => {
         // Verify owner can remove user from whitelist
         await whitelist.remove(whitelistedMinter.address)
         expect(await whitelist.isWhitelisted(whitelistedMinter.address)).to.be.false
+      })
+    })
+
+    describe('Failure', () => {
+      it('rejects non-owner from adding/deleting whitelist users', async () => {
+        // expect the whitelist contract to be reverted if a non-owner tries to add a user to the whitelist
+        await expect(whitelist.connect(minter).add(minter.address)).to.be.reverted
+
+        // expect the whitelist contract to be reverted if a non-owner tries to remove a user from the whitelist
+        await expect(whitelist.connect(minter).remove(minter.address)).to.be.reverted
+      })
     })
   })
 
