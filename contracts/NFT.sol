@@ -8,12 +8,14 @@ import "./Ownable.sol";
 contract NFT is ERC721Enumerable, Ownable {
     using Strings for uint256;
 
-    // Set global variables
+    // ??? Set global/local variables ???
     string public baseURI;
     string public baseExtension = ".json";
     uint256 public cost;
     uint256 public maxSupply;
     uint256 public allowMintingOn;
+    // State variable to track if minting is paused
+    bool public paused = false;
 
     event Mint(uint256 amount, address minter);
     event Withdraw(uint256 amount, address owner);
@@ -38,8 +40,14 @@ contract NFT is ERC721Enumerable, Ownable {
         baseURI = _baseURI;
     }
 
+    // Mapping to track minted tokens
+    mapping(address => uint256) public mintedTokens;
+
     // _mintAmount allows multiple to be minted at once
     function mint(uint256 _mintAmount) public payable {
+        // Check if minting is paused
+        require(!paused, "Minting is paused");
+
         // Allow minting after specified time
         // block.timestamp is now
         require(block.timestamp >= allowMintingOn);
@@ -58,10 +66,15 @@ contract NFT is ERC721Enumerable, Ownable {
         // Limit minting to token qty
         require(supply + _mintAmount <= maxSupply);
 
+        // Enforce max minting limit per account
+        require(mintedTokens[msg.sender] + _mintAmount <= 3, "Max minting limit per account is 3");
+
         // looping token id for uniqueness
         for(uint256 i = 1; i <= _mintAmount; i++){
             // token id has to iterate
             _safeMint(msg.sender, supply + i);
+            // Update the minted tokens count
+            mintedTokens[msg.sender] += 1;
         }
 
         emit Mint(_mintAmount, msg.sender);
@@ -109,5 +122,13 @@ contract NFT is ERC721Enumerable, Ownable {
 
     function setCost(uint256 _newCost) public onlyOwner() {
         cost = _newCost;
+    }
+
+    function pauseMinting() public onlyOwner() {
+        paused = true;
+    }
+
+    function unpauseMinting() public onlyOwner() {
+        paused = false;
     }
 }

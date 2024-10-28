@@ -18,13 +18,19 @@ describe('NFT', () => {
   
   let nft,
     deployer,
-    minter
+    minter,
+    minter2
 
   beforeEach(async () => {
     let accounts = await ethers.getSigners()
 
+    // Assigning accounts to global variables
+    // NFT contract deployer
     deployer = accounts[0]
+
+    // Minter accounts
     minter = accounts[1]
+    minter2 = accounts[2]
   })
 
   describe('Deployment', () => {
@@ -126,6 +132,19 @@ describe('NFT', () => {
         await expect(nft.connect(minter).mint(0, {value: COST})).to.be.reverted
       })
 
+      it("rejects minting more than 3 NFTs per account", async () => {
+        // Mint 3 tokens for minter
+        await nft.connect(minter).mint(3, { value: ethers.utils.parseEther("30") })
+  
+        // Check the balance of minter
+        expect(await nft.balanceOf(minter.address)).to.equal(3)
+
+        // Try to mint a 4th token and expect it to fail
+        await expect(
+          nft.connect(minter).mint(1, { value: COST })
+        ).to.be.revertedWith("Max minting limit per account is 3")
+      })
+
       it('rejects minting before allowed time', async () => {
         // Setting mint date into future
         const ALLOW_MINTING_ON = new Date('May 26, 2030 18:00:00').getTime().toString().slice(0, 10)
@@ -155,6 +174,28 @@ describe('NFT', () => {
         await expect(nft.tokenURI('99')).to.be.reverted
       })
 
+    })
+  })
+
+  describe('Setting Cost', async () => {
+    let transaction, result
+    let cost = ether(2)
+
+    describe('Success', () => {
+        beforeEach(async () => {
+            transaction = await nft.connect(deployer).setCost(cost)
+            result = await transaction.wait()
+        })
+
+        it('updates the cost', async () => {
+            expect(await nft.cost()).to.eq(cost)
+        })
+    })
+
+    describe('Failure', () => {
+        it('prevents non-owner from updating cost', async () => {
+            await expect(nft.connect(minter).setCost(cost)).to.be.reverted
+        })
     })
   })
 
