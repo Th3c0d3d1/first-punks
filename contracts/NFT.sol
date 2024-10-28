@@ -41,6 +41,9 @@ contract NFT is ERC721Enumerable, Ownable, Whitelist{
         baseURI = _baseURI;
     }
 
+    // Mapping to track minted tokens
+    mapping(address => uint256) public mintedTokens;
+
     // function to buy tokens by direct contract interaction
     // no user/website interaction
     // required to receive ETH
@@ -56,15 +59,15 @@ contract NFT is ERC721Enumerable, Ownable, Whitelist{
         uint256 amount = msg.value / cost;
         require(amount > 0, "Insufficient funds to mint NFTs");
 
+        // Enforce max minting limit per account
+        require(mintedTokens[msg.sender] + amount <= 3, "Max minting limit per account is 3");
+
         // Mint the tokens
         mint(amount);
 
         // Emit an event for the purchase
         emit Mint(amount, msg.sender);
     }
-
-    // Mapping to track minted tokens
-    mapping(address => uint256) public mintedTokens;
 
     // _mintAmount allows multiple to be minted at once
     function mint(uint256 _mintAmount) public payable {

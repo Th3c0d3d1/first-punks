@@ -19,18 +19,36 @@ describe('NFT', () => {
   let nft,
     deployer,
     minter,
-    minter2
+    whitelistedMinter,
+    nonWhitelistedMinter
 
   beforeEach(async () => {
+    // Load Contract Factories
+    const Whitelist = await ethers.getContractFactory('Whitelist')
+
+    // Deploy the whitelist contract
+    whitelist = await Whitelist.deploy()
+
+    // Get the signers
     let accounts = await ethers.getSigners()
 
-    // Assigning accounts to global variables
+    // Assigning accounts to signers (global variables)
     // NFT contract deployer
     deployer = accounts[0]
-
     // Minter accounts
     minter = accounts[1]
-    minter2 = accounts[2]
+    whitelistedMinter = accounts[2]
+    nonWhitelistedMinter = accounts[3]
+
+    // Add deployer to the whitelist
+    await whitelist.add(deployer.address)
+    // Add minter to the whitelist
+    await whitelist.add(whitelistedMinter.address)
+
+    // Verify deployer is on the whitelist
+    expect(await whitelist.isWhitelisted(deployer.address)).to.be.true
+    // Verify minter is on the whitelist
+    expect(await whitelist.isWhitelisted(whitelistedMinter.address)).to.be.true  
   })
 
   describe('Deployment', () => {
@@ -68,6 +86,21 @@ describe('NFT', () => {
 
     it('returns the owner', async () => {
       expect(await nft.owner()).to.equal(deployer.address)
+    })
+
+    it('verifies owners whitelist status', async () => {
+      // Verify owner is on the whitelist
+      expect(await whitelist.isWhitelisted(deployer.address)).to.be.true
+    })
+
+    it('checks owners right to add/del user from whitelist ', async () => {
+        // Verify owner can add user to whitelist
+        await whitelist.add(nonWhitelistedMinter.address)
+        expect(await whitelist.isWhitelisted(nonWhitelistedMinter.address)).to.be.true
+
+        // Verify owner can remove user from whitelist
+        await whitelist.remove(whitelistedMinter.address)
+        expect(await whitelist.isWhitelisted(whitelistedMinter.address)).to.be.false
     })
   })
 
