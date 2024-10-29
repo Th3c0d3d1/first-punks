@@ -89,7 +89,7 @@ contract NFT is ERC721Enumerable, Ownable, Whitelist{
         // ??? ERC721Enummerable will tell you collection qty(not free in ERC721.sol) ???
         uint256 supply = totalSupply();
 
-        // // ??? Limit minting to token qty
+        // // ??? Limit minting to token qty ???
         // require(supply + _mintAmount <= maxSupply);
 
         // Enforce max minting limit per account

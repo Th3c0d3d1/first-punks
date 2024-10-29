@@ -48,6 +48,21 @@ function App() {
     const account = ethers.utils.getAddress(accounts[0])
     setAccount(account)
 
+    // Fetch NFTs owned by the minter
+    const walletOfOwner = await nft.walletOfOwner(account);
+    const nftData = await Promise.all(walletOfOwner.map(async (tokenId) => {
+      const tokenURI = await nft.tokenURI(tokenId);
+      const response = await fetch(tokenURI);
+      const metadata = await response.json();
+      return {
+        tokenId,
+        image: metadata.image,
+        name: metadata.name,
+        description: metadata.description
+      };
+    }));
+    setNfts(nftData);
+
     // Fetch Countdown
     const allowMintingOn = await nft.allowMintingOn()
     // setting reveal time to milliseconds (+ '000')
