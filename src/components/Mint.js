@@ -5,21 +5,21 @@ import { Form, Button, Spinner } from "react-bootstrap";
 // nft - call mint function
 // cost - verify payment amount
 // setIsLoading - refresh page
-const Mint = ({provider, nft, cost, setIsLoading}) => {
+const Mint = ({ provider, nft, cost, setIsLoading, isWhitelisted }) => {
     const [isWaiting, setIsWaiting] = useState(false)
 
-    const mintHandler = async(e) => {
+    const mintHandler = async (e) => {
         e.preventDefault()
         // Verify button onSubmit functionality in console 
         // console.log('minting...')
         setIsWaiting(true)
 
-        try{
+        try {
             // Get signer
             const signer = await provider.getSigner()
 
             // Mint nft to signer
-            const transaction = await nft.connect(signer).mint(1, {value: cost})
+            const transaction = await nft.connect(signer).mint(1, { value: cost })
             await transaction.wait()
         } catch {
             window.alert('User rejected or transaction reverted')
@@ -27,15 +27,21 @@ const Mint = ({provider, nft, cost, setIsLoading}) => {
         setIsLoading(true)
     }
 
-    return(
-        <Form onSubmit={mintHandler} style={{maxWidth: '450px', margin: '50px auto'}}>
+    return (
+        <Form onSubmit={mintHandler} style={{ maxWidth: '450px', margin: '50px auto' }}>
             {isWaiting ? (
-                <Spinner animation="border" style={{display: 'block', margin: '0 auto'}} />
+                <Spinner animation="border" style={{ display: 'block', margin: '0 auto' }} />
             ) : (
                 <Form.Group>
-                    <Button variant="primary" type="submit" style={{width: '100%'}}>
-                        Mint
-                    </Button>
+                    {isWhitelisted ? (
+                        <Button variant="primary" type="submit" style={{ width: '100%' }}>
+                            Mint
+                        </Button>
+                    ) : (
+                        <Button variant="secondary" type="submit" style={{ width: '100%' }} disabled='true'>
+                            Must Be Whitelisted!
+                        </Button>)
+                    }
                 </Form.Group>
             )}
         </Form>

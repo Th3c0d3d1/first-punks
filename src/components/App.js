@@ -22,6 +22,9 @@ function App() {
   const [provider, setProvider] = useState(null)
   const [nft, setNft] = useState(null)
   const [nfts, setNfts] = useState([])
+  const [signer, setSigner] = useState('')
+  const [isWhitelisted, setIsWhitelisted] = useState(false)
+
 
   const [account, setAccount] = useState(null)
   const [balance, setBalance] = useState(0)
@@ -31,14 +34,19 @@ function App() {
   const [totalSupply, setTotalSupply] = useState(0)
   const [cost, setCost] = useState(0)
 
-  
-
   const [isLoading, setIsLoading] = useState(true)
+
+  const convertIpfsUrlToHttp = (url) => {
+    return url.replace('ipfs://', 'https://ipfs.io/ipfs/');
+  };
 
   const loadBlockchainData = async () => {
     // Initiate provider
     const provider = new ethers.providers.Web3Provider(window.ethereum)
     setProvider(provider)
+
+    // const signer = await provider.getSigner()
+    // setSigner(signer)
 
     // Initiate the contract
     const nft = new ethers.Contract(config[31337].nft.address, NFT_ABI, provider)
@@ -49,15 +57,19 @@ function App() {
     const account = ethers.utils.getAddress(accounts[0])
     setAccount(account)
 
+    const isWhitelisted = await nft.isWhitelisted(account)
+    setIsWhitelisted(isWhitelisted)
+
     // Fetch NFTs owned by the minter
     const walletOfOwner = await nft.walletOfOwner(account);
     const nftData = await Promise.all(walletOfOwner.map(async (tokenId) => {
       const tokenURI = await nft.tokenURI(tokenId);
-      const response = await fetch(tokenURI);
+      const httpUrl = convertIpfsUrlToHttp(tokenURI);
+      const response = await fetch(httpUrl);
       const metadata = await response.json();
       return {
         tokenId,
-        image: metadata.image,
+        image: convertIpfsUrlToHttp(metadata.image),
         name: metadata.name
       };
     }));
@@ -131,14 +143,16 @@ function App() {
                 nft={nft}
                 cost={cost}
                 setIsLoading={setIsLoading}
+                account={account}
+                isWhitelisted={isWhitelisted}
               />
             </Col>
           </Row>
-          <Row>
+          <Row className='mt-4'>
             {nfts.map((nft, index) => (
               <Col key={index} md={4} className='mb-4'>
                 <div className='card'>
-                  <img src={nft.image} alt={nft.name} className='card-img-top' />
+                  <img src={nft.image} alt={nft.name}className='card-img-top' />
                   <div className='card-body'>
                     <h5 className='card-title'>{nft.name}</h5>
                   </div>
