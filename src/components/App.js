@@ -21,6 +21,7 @@ import preview from '../preview.png';
 function App() {
   const [provider, setProvider] = useState(null)
   const [nft, setNft] = useState(null)
+  const [nfts, setNfts] = useState([])
 
   const [account, setAccount] = useState(null)
   const [balance, setBalance] = useState(0)
@@ -57,8 +58,7 @@ function App() {
       return {
         tokenId,
         image: metadata.image,
-        name: metadata.name,
-        description: metadata.description
+        name: metadata.name
       };
     }));
     setNfts(nftData);
@@ -133,6 +133,18 @@ function App() {
                 setIsLoading={setIsLoading}
               />
             </Col>
+          </Row>
+          <Row>
+            {nfts.map((nft, index) => (
+              <Col key={index} md={4} className='mb-4'>
+                <div className='card'>
+                  <img src={nft.image} alt={nft.name} className='card-img-top' />
+                  <div className='card-body'>
+                    <h5 className='card-title'>{nft.name}</h5>
+                  </div>
+                </div>
+              </Col>
+            ))}
           </Row>
         </>
       )}
