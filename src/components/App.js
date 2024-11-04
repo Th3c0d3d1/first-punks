@@ -11,7 +11,7 @@ import Loading from './Loading';
 
 // ABIs: Import your contract ABIs here
 import NFT_ABI from '../abis/Nft.json';
-import Whitelist_ABI from '../abis/Whitelist.json';
+import WHITELIST_ABI from '../abis/Whitelist.json';
 
 // Config: Import your network config here
 import config from '../config.json';
