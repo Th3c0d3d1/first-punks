@@ -143,7 +143,6 @@ function App() {
                 nft={nft}
                 cost={cost}
                 setIsLoading={setIsLoading}
-                account={account}
                 isWhitelisted={isWhitelisted}
               />
             </Col>
