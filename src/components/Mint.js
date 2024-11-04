@@ -38,7 +38,7 @@ const Mint = ({ provider, nft, cost, setIsLoading, isWhitelisted }) => {
                             Mint
                         </Button>
                     ) : (
-                        <Button variant="secondary" type="submit" style={{ width: '100%' }} disabled='true'>
+                        <Button variant="secondary" type="submit" style={{ width: '100%' }} disabled={true}>
                             Must Be Whitelisted!
                         </Button>)
                     }
