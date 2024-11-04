@@ -11,6 +11,7 @@ import Loading from './Loading';
 
 // ABIs: Import your contract ABIs here
 import NFT_ABI from '../abis/Nft.json';
+import Whitelist_ABI from '../abis/Whitelist.json';
 
 // Config: Import your network config here
 import config from '../config.json';
@@ -22,7 +23,7 @@ function App() {
   const [provider, setProvider] = useState(null)
   const [nft, setNft] = useState(null)
   const [nfts, setNfts] = useState([])
-  const [signer, setSigner] = useState('')
+  // const [signer, setSigner] = useState('')
   const [isWhitelisted, setIsWhitelisted] = useState(false)
 
 
@@ -48,17 +49,27 @@ function App() {
     // const signer = await provider.getSigner()
     // setSigner(signer)
 
-    // Initiate the contract
+    // Initiate NFT contract
     const nft = new ethers.Contract(config[31337].nft.address, NFT_ABI, provider)
     setNft(nft)
+
+    // Initiate Whitelist contract
+    const whitelist = new ethers.Contract(config[31337].whitelist.address, WHITELIST_ABI, provider)
+    setWhitelist(whitelist)
 
     // Fetch accounts
     const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' })
     const account = ethers.utils.getAddress(accounts[0])
     setAccount(account)
 
-    const isWhitelisted = await nft.isWhitelisted(account)
+    // Fetch Whitelist status
+    try {
+      const isWhitelisted = await whitelist.isWhitelisted(account)
     setIsWhitelisted(isWhitelisted)
+    } catch (error) {
+      console.error('Error fetching whitelist status:', error)
+    }
+    
 
     // Fetch NFTs owned by the minter
     const walletOfOwner = await nft.walletOfOwner(account);
