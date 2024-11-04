@@ -24,6 +24,7 @@ function App() {
   const [nft, setNft] = useState(null)
   const [nfts, setNfts] = useState([])
   // const [signer, setSigner] = useState('')
+  const [whitelist, setWhitelist] = useState(null)
   const [isWhitelisted, setIsWhitelisted] = useState(false)
 
 

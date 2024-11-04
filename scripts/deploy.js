@@ -22,6 +22,14 @@ async function main() {
   // Log NFT address
   await nft.deployed()
   console.log(`NFT deployed to: ${nft.address}\n`)
+
+  // Deploy Whitelist
+  const Whitelist = await hre.ethers.getContractFactory('Whitelist')
+  let whitelist = await Whitelist.deploy()
+
+  // Log Whitelist address
+  await whitelist.deployed()
+  console.log(`Whitelist deployed to: ${whitelist.address}\n`)
 }
 
 // Handle errors
